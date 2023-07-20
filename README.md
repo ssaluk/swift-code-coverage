@@ -2,7 +2,7 @@
 Simple code coverage tool to filter and dump the code coverage collected from Xcode xcresult file
 
 ## Usage
-    USAGE: code-coverage --xcresult-file <xcresult-file> [--config-yaml-file <config-yaml-file>]
+    USAGE: codecoverage --xcresult-file <xcresult-file> [--config-yaml-file <config-yaml-file>]
 
     OPTIONS:
       --xcresult-file <xcresult-file>
