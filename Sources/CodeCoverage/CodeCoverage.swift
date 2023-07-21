@@ -163,8 +163,6 @@ struct CodeCoverage: ParsableCommand {
         }
 
         let totalCoverage = targetsCount > 0 ? targetsTotal / Double(targetsCount) : 0
-        let totalCoverageMessage = String(format: "Total coverage: %.1f%%", totalCoverage)
-        print(totalCoverageMessage)
 
         let fileNameColumn = TextTableColumn(header: "File")
         let fileCoverageColumn = TextTableColumn(header: "Coverage, %")
@@ -187,9 +185,11 @@ struct CodeCoverage: ParsableCommand {
             print(targetTable.render())
         }
 
-        let totalCoverageRounded = Int(round(totalCoverage))
-        if  totalCoverageRounded < config.minCoverage  {
-            print(String(format: "FAIL: Current coverage %d is less than min %d", totalCoverage, config.minCoverage))
+        let totalCoverageMessage = String(format: "\nTOTAL coverage: %.1f%%", totalCoverage)
+        print(totalCoverageMessage)
+
+        if  totalCoverage < Double(config.minCoverage) {
+            print(String(format: "\nFAIL: Current coverage %.1f%% is less than min %d%%", totalCoverage, config.minCoverage))
             throw ExitCode(1)
         }
     }
