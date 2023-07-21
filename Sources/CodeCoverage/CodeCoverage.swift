@@ -21,7 +21,7 @@ struct CoverageConfiguration: Codable {
     var include: Include?
     var exclude: Exclude?
 
-    var minCoverage: Double = 85
+    var minCoverage: Int = 85
 }
 
 protocol Matcher {
@@ -187,8 +187,9 @@ struct CodeCoverage: ParsableCommand {
             print(targetTable.render())
         }
 
-        if totalCoverage < config.minCoverage {
-            print(String(format: "FAIL: Current coverage %.1f%% is less than min %.1f%%", totalCoverage, config.minCoverage))
+        let totalCoverageRounded = Int(round(totalCoverage))
+        if  totalCoverageRounded < config.minCoverage  {
+            print(String(format: "FAIL: Current coverage %d is less than min %d", totalCoverage, config.minCoverage))
             throw ExitCode(1)
         }
     }
