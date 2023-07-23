@@ -1,5 +1,6 @@
 # swift-code-coverage
-Simple code coverage tool to filter and dump the code coverage collected from Xcode xcresult file
+Simple code coverage tool to filter and dump the code coverage collected from Xcode xcresult file.
+You can use coverage rules file to control which targets or individual files are included or excluded.
 
 ## Usage
     USAGE: codecoverage --xcresult-file <xcresult-file> [--config-yaml-file <config-yaml-file>]
