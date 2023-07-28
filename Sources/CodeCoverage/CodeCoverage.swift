@@ -86,6 +86,9 @@ struct CodeCoverage: ParsableCommand {
     @Option(help: "The path to optional configuration YAML file.")
     var configYamlFile: String?
 
+    @Option(help: "Use ANSI coloured output")
+    var useAnsiColors: Bool = true
+
     mutating func run() throws {
         let xcresultURL = URL(fileURLWithPath: xcresultFile)
         let resultFile = XCResultFile(url: xcresultURL)
@@ -169,7 +172,8 @@ struct CodeCoverage: ParsableCommand {
             targetTable.header = targetCoverage.target
             let sortedFiles = targetCoverage.files.sorted(by: { $0.file < $1.file })
             let coverageRows = sortedFiles.map {
-                coverageRow($0.file, coverage: $0.coverage, minCoverage: config.minCoverage)
+                coverageRow($0.file, coverage: $0.coverage,
+                            minCoverage: config.minCoverage)
             }
             targetTable.addRows(values: coverageRows)
             targetTable.addRow(values: ["", ""])
@@ -182,7 +186,8 @@ struct CodeCoverage: ParsableCommand {
         var totalCoverageTable = TextTable(columns: [targetColumn, fileCoverageColumn])
         totalCoverageTable.header = "Coverage by targets"
         let coverageRows = targetsCoverage.map {
-            coverageRow($0.target, coverage: $0.coverage, minCoverage: config.minCoverage)
+            coverageRow($0.target, coverage: $0.coverage,
+                        minCoverage: config.minCoverage)
         }
         totalCoverageTable.addRows(values: coverageRows)
         totalCoverageTable.addRow(values: ["", ""])
@@ -191,7 +196,12 @@ struct CodeCoverage: ParsableCommand {
         print(totalCoverageTable.render())
 
         if  totalCoverage < Double(config.minCoverage) {
-            print(String(format: "\nFAIL: Current coverage %.1f%% is less than min %d%%", totalCoverage, config.minCoverage).color(.redText))
+            var failureText = String(format: "\nFAIL: Current coverage %.1f%% is less than min %d%%",
+                                     totalCoverage, config.minCoverage)
+            if useAnsiColors {
+                failureText = failureText.color(.redText)
+            }
+            print(failureText)
             throw ExitCode(1)
         }
     }
@@ -204,12 +214,18 @@ private extension CodeCoverage {
             coverage.isZero ?  "-" : String(format: "%.1f", coverage)
         ]
 
-        if coverage.isZero {
-            return coverageText.map { $0.color(.redText) }
-        } else if coverage < Double(minCoverage) {
-            return coverageText.map { $0.color(.yellowText) }
-        } else {
-            return coverageText.map { $0.color(.greenText) }
+        guard useAnsiColors else {
+            return coverageText
         }
+
+        let color: AnsiColor
+        if coverage.isZero {
+            color = .redText
+        } else if coverage < Double(minCoverage) {
+            color = .yellowText
+        } else {
+            color = .greenText
+        }
+        return coverageText.map { $0.color(color) }
     }
 }
