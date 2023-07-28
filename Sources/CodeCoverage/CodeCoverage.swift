@@ -1,6 +1,3 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
 import ArgumentParser
 import XCResultKit
 import Foundation
@@ -171,40 +168,48 @@ struct CodeCoverage: ParsableCommand {
             var targetTable = TextTable(columns: [fileNameColumn, fileCoverageColumn])
             targetTable.header = targetCoverage.target
             let sortedFiles = targetCoverage.files.sorted(by: { $0.file < $1.file })
-            for fileCoverage in sortedFiles {
-                targetTable.addRow(values: [
-                    fileCoverage.file,
-                    fileCoverage.coverage > 0 ? String(format: "%.1f", fileCoverage.coverage) : "-"
-                ])
+            let coverageRows = sortedFiles.map {
+                coverageRow($0.file, coverage: $0.coverage, minCoverage: config.minCoverage)
             }
+            targetTable.addRows(values: coverageRows)
             targetTable.addRow(values: ["", ""])
-            targetTable.addRow(values: [
-                "TOTAL:",
-                String(format: "%.1f", targetCoverage.coverage)
-            ])
+            targetTable.addRow(values: coverageRow("TOTAL:", coverage: targetCoverage.coverage,
+                                                   minCoverage: config.minCoverage))
             print(targetTable.render())
         }
 
         let targetColumn = TextTableColumn(header: "Target")
         var totalCoverageTable = TextTable(columns: [targetColumn, fileCoverageColumn])
         totalCoverageTable.header = "Coverage by targets"
-
-        for targetCoverage in targetsCoverage {
-            totalCoverageTable.addRow(values: [
-                targetCoverage.target,
-                String(format: "%.1f", targetCoverage.coverage)
-            ])
+        let coverageRows = targetsCoverage.map {
+            coverageRow($0.target, coverage: $0.coverage, minCoverage: config.minCoverage)
         }
+        totalCoverageTable.addRows(values: coverageRows)
         totalCoverageTable.addRow(values: ["", ""])
-        totalCoverageTable.addRow(values: [
-            "TOTAL:",
-            String(format: "%.1f%%", totalCoverage)
-        ])
+        totalCoverageTable.addRow(values: coverageRow("TOTAL:", coverage: totalCoverage,
+                                                      minCoverage: config.minCoverage))
         print(totalCoverageTable.render())
 
         if  totalCoverage < Double(config.minCoverage) {
-            print(String(format: "\nFAIL: Current coverage %.1f%% is less than min %d%%", totalCoverage, config.minCoverage))
+            print(String(format: "\nFAIL: Current coverage %.1f%% is less than min %d%%", totalCoverage, config.minCoverage).color(.redText))
             throw ExitCode(1)
+        }
+    }
+}
+
+private extension CodeCoverage {
+    func coverageRow(_ title: String, coverage: Double, minCoverage: Int) -> [String] {
+        let coverageText = [
+            title,
+            coverage.isZero ?  "-" : String(format: "%.1f", coverage)
+        ]
+
+        if coverage.isZero {
+            return coverageText.map { $0.color(.redText) }
+        } else if coverage < Double(minCoverage) {
+            return coverageText.map { $0.color(.yellowText) }
+        } else {
+            return coverageText.map { $0.color(.greenText) }
         }
     }
 }
