@@ -3,13 +3,14 @@ Simple code coverage tool to filter and dump the code coverage collected from Xc
 You can use coverage rules file to control which targets or individual files are included or excluded.
 
 ## Usage
-    USAGE: codecoverage --xcresult-file <xcresult-file> [--config-yaml-file <config-yaml-file>]
+    USAGE: codecoverage --xcresult-file <xcresult-file> [--config-yaml-file <config-yaml-file>] [--no-color]
 
     OPTIONS:
       --xcresult-file <xcresult-file>
                               The path to the .xcresult file.
       --config-yaml-file <config-yaml-file>
                               The path to optional configuration YAML file.
+      --no-color              Disable ANSI-coloured output.
       -h, --help              Show help information.
 
 ## Sample

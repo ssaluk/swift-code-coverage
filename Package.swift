@@ -9,8 +9,7 @@ let package = Package(
         .macOS(.v12),
     ],
     products: [
-        .executable(name: "codecoverage",
-                    targets: ["CodeCoverage"]),
+        .executable(name: "codecoverage", targets: ["CodeCoverage"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
@@ -19,15 +18,26 @@ let package = Package(
         .package(url: "https://github.com/scottrhoyt/SwiftyTextTable.git", from: "0.9.0")
     ],
     targets: [
-        .executableTarget(
-            name: "CodeCoverage",
+        .target(
+            name: "CodeCoverageLib",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "XCResultKit", package: "XCResultKit"),
                 .product(name: "Yams", package: "Yams"),
                 .product(name: "SwiftyTextTable", package: "SwiftyTextTable")
-            ],
-            path: "Sources"
+            ]
+        ),
+        .executableTarget(
+            name: "CodeCoverage",
+            dependencies: [
+                "CodeCoverageLib"
+            ]
+        ),
+        .testTarget(
+            name: "CodeCoverageLibTests",
+            dependencies: [
+                "CodeCoverageLib"
+            ]
         )
     ]
 )
