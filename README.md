@@ -42,3 +42,16 @@ Sample `.swiftcoverage.yml`
 
 
         minCoverage: 85
+
+## LLVM branch coverage artifact
+
+For Swift Package Manager builds, generate LLVM coverage JSON with branch data:
+
+```sh
+./Scripts/generate-llvm-coverage.sh
+```
+
+The script runs the tests with code coverage enabled and writes
+`coverage/llvm-coverage.json`. Pass an output path as its first argument to
+choose another location. This artifact is separate from an Xcode `.xcresult`:
+it cannot be added to or used to enrich the result bundle.
