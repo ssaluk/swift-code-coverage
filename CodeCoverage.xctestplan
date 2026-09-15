@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "A8431D93-1D9C-4655-B7A7-FB1D7E183602",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:",
+      "identifier" : "codecoverage",
+      "name" : "codecoverage"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "CodeCoverageLibTests",
+        "name" : "CodeCoverageLibTests"
+      }
+    }
+  ],
+  "version" : 1
+}
