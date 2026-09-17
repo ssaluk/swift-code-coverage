@@ -12,6 +12,9 @@ struct CodeCoverage: ParsableCommand {
     @Option(help: "The path to optional configuration YAML file.")
     var configYamlFile: String?
 
+    @Option(help: "The path to LLVM coverage JSON for Sonar-style combined coverage.")
+    var llvmCoverageFile: String?
+
     @Flag(name: .customLong("no-color"), help: "Disable ANSI-coloured output")
     var noColor = false
 
@@ -19,6 +22,7 @@ struct CodeCoverage: ParsableCommand {
         try CodeCoverageRunner().run(
             xcresultFile: xcresultFile,
             configYamlFile: configYamlFile,
+            llvmCoverageFile: llvmCoverageFile,
             useAnsiColors: !noColor
         )
     }

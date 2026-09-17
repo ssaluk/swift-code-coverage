@@ -43,6 +43,18 @@ Sample `.swiftcoverage.yml`
 
         minCoverage: 85
 
+To calculate Sonar-style combined line and branch coverage, provide the LLVM
+coverage JSON along with the `.xcresult` target mapping:
+
+```sh
+codecoverage --xcresult-file Tests.xcresult \
+  --llvm-coverage-file coverage/llvm-coverage.json
+```
+
+For matching files, coverage is calculated as `(covered lines + covered branch
+outcomes) / (executable lines + branch outcomes)`. Files absent from the LLVM
+report retain their `.xcresult` line coverage.
+
 ## LLVM branch coverage artifact
 
 For Swift Package Manager builds, generate LLVM coverage JSON with branch data:

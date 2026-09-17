@@ -28,7 +28,12 @@ public struct CodeCoverageRunner {
         self.coverageFormatterFactory = coverageFormatterFactory
     }
 
-    public func run(xcresultFile: String, configYamlFile: String?, useAnsiColors: Bool) throws {
+    public func run(
+        xcresultFile: String,
+        configYamlFile: String?,
+        llvmCoverageFile: String? = nil,
+        useAnsiColors: Bool
+    ) throws {
         var configYamlFile: String? = configYamlFile
         let xcresultURL = URL(fileURLWithPath: xcresultFile)
         let resultFile = coverageSourceFactory.create(url: xcresultURL)
@@ -58,7 +63,22 @@ public struct CodeCoverageRunner {
             throw ValidationError("No coverage information found in xcresult")
         }
 
-        let targetsCoverage = TargetsCoverage(codeCoverage: codeCoverage, coverageFilter: coverageFilter)
+        let llvmCoverage: LLVMCoverage?
+        if let llvmCoverageFile {
+            do {
+                llvmCoverage = try LLVMCoverage(data: localData.loadFileData(from: llvmCoverageFile))
+            } catch {
+                throw ValidationError("Unable to load LLVM coverage: \(error.localizedDescription)")
+            }
+        } else {
+            llvmCoverage = nil
+        }
+
+        let targetsCoverage = TargetsCoverage(
+            codeCoverage: codeCoverage,
+            coverageFilter: coverageFilter,
+            llvmCoverage: llvmCoverage
+        )
 
         let coverageFormatter = coverageFormatterFactory(useAnsiColors)
         output.print(coverageFormatter.format(targetsCoverage, minCoverage: config.minCoverage))
